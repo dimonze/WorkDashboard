@@ -1,0 +1,22 @@
+{% set monthlyBudgets = _context["field"].customOptions.get("monthBudgets") %}
+
+{% if monthlyBudgets is empty %}
+    <p>No monthly budgets</p>
+{% else %}
+    <table>
+        <thead>
+        <tr>
+            <th>Month</th>
+            <th>Budget</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for start, budget in monthlyBudgets %}
+            <tr>
+                <td>{{ start|date('F Y') }}: </td>
+                <td>${{ budget|number_format(1, '.', ',') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

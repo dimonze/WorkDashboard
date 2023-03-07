@@ -8,15 +8,28 @@
     "require": {
         "php": ">=8.1",
         "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-iconv": "*",
+        "doctrine/doctrine-bundle": "^2.8",
+        "doctrine/doctrine-migrations-bundle": "^3.2",
+        "doctrine/orm": "^2.14",
+        "easycorp/easyadmin-bundle": "^4.5",
+        "phpoffice/phpspreadsheet": "^1.28",
+        "phpoffice/phpword": "^1.0",
+        "sensio/framework-extra-bundle": "^6.2",
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.2.*",
-        "symfony/runtime": "6.2.*",
-        "symfony/yaml": "6.2.*"
-    },
-    "require-dev": {
+        "symfony/google-mailer": "6.2.*",
+        "symfony/mailer": "6.2.*",
+        "symfony/runtime": "^6.2",
+        "symfony/security-bundle": "6.2.*",
+        "symfony/webpack-encore-bundle": "^1.16",
+        "symfony/yaml": "6.2.*",
+        "symfonycasts/verify-email-bundle": "^1.13",
+        "twbs/bootstrap": "^5.2",
+        "twig/intl-extra": "^3.5"
     },
     "config": {
         "allow-plugins": {
@@ -64,5 +77,13 @@
             "allow-contrib": false,
             "require": "6.2.*"
         }
+    },
+    "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "symfony/debug-bundle": "6.2.*",
+        "symfony/maker-bundle": "^1.48",
+        "symfony/stopwatch": "6.2.*",
+        "symfony/web-profiler-bundle": "6.2.*",
+        "zenstruck/foundry": "^1.26"
     }
 }
