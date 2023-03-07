@@ -42,9 +42,9 @@ class ScrapeData extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->write("Command started\n");
-//        $this->updateDbByDataArtPMData();
-        $this->updateRolesInContracts();
-        $this->calculateBudget();
+        $this->updateDbByDataArtPMData();
+//        $this->updateRolesInContracts();
+//        $this->calculateBudget();
         $output->write("Command done");
 
         return Command::SUCCESS;

@@ -11,7 +11,6 @@ use App\Command\Scrapers\DataArtPM\Storages\AssignmentsList;
 use App\Command\Scrapers\DataArtPM\Storages\ContractsLists;
 use App\Command\Scrapers\DataArtPM\Storages\EngineersList;
 use App\Command\Scrapers\DataArtPM\Storages\ProjectsList;
-use Symfony\Component\DependencyInjection\Tests\Compiler\E;
 
 class DataArtPMScraper
 {
@@ -19,12 +18,12 @@ class DataArtPMScraper
     private const PROJECTS_LIST_QUERY = "projectName=&projectGroup=%d&customer=-1&startDate=,&estimatedFinish=,&finish=,&billStatus=0,4,5,2,1,3,6&status=0,1&legalEntity=-1";
     private const PROJECTS_DETAILS_RATES = "https://pmaccounting.dataart.com/Rates/ShowRates?projectId=%d";
     private const USER_NAME = "dhimenes";
-    private const PASSWORD = "";
 
     private ProjectsList $projectsList;
     private EngineersList $engineersList;
     private AssignmentsList $assignmentsList;
     private ContractsLists $contractsLists;
+    private string $password;
     private array $rateCard = [];
 
     public function __construct(array $listOfGroupIDs)
@@ -33,6 +32,7 @@ class DataArtPMScraper
         $this->engineersList = new EngineersList();
         $this->assignmentsList = new AssignmentsList();
         $this->contractsLists = new ContractsLists();
+        $this->password = file_get_contents($_SERVER["PWD"] . "/../var/password");
         foreach ($listOfGroupIDs as $groupID) {
             $this->scrapeGroup($groupID);
         }
@@ -42,7 +42,7 @@ class DataArtPMScraper
     {
         $rawProjects = RestHelper::postRequest(self::PROJECTS_LIST,
             sprintf(self::PROJECTS_LIST_QUERY, $groupID),
-            self::USER_NAME, self::PASSWORD, true);
+            self::USER_NAME, $this->password, true);
         foreach ($rawProjects as $project){
             $this->extractData($project);
         }
@@ -53,7 +53,7 @@ class DataArtPMScraper
     private function extractData($projectData): void
     {
         $rawProjectDetails = RestHelper::getRequest(sprintf(self::PROJECTS_DETAILS_RATES, $projectData["ProjectId"]),
-            self::USER_NAME, self::PASSWORD, true)["projectRates"];
+            self::USER_NAME, $this->password, true)["projectRates"];
         $this->extractProjects($projectData, $rawProjectDetails);
         $this->extractEngineers($projectData, $rawProjectDetails);
         $this->extractAssignments($projectData, $rawProjectDetails);
