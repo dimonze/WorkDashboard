@@ -32,7 +32,7 @@ class DataArtPMScraper
         $this->engineersList = new EngineersList();
         $this->assignmentsList = new AssignmentsList();
         $this->contractsLists = new ContractsLists();
-        $this->password = file_get_contents($_SERVER["PWD"] . "/../var/password");
+        $this->password = file_get_contents($_SERVER["PWD"] . "/var/password");
         foreach ($listOfGroupIDs as $groupID) {
             $this->scrapeGroup($groupID);
         }

@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Command\Helpers\Utility\MailService;
 use App\Command\Scrapers\DataArtPM\DataArtPMScraper;
 use App\Entity\AssignedRoles;
 use App\Entity\Assignments;
@@ -42,9 +43,13 @@ class ScrapeData extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->write("Command started\n");
-        $this->updateDbByDataArtPMData();
+//        $this->updateDbByDataArtPMData();
 //        $this->updateRolesInContracts();
 //        $this->calculateBudget();
+        $mail = new MailService('exchange.dataart.com', 993,
+            'universe\dhimenes',
+            file_get_contents('/Users/dimonze/projects/WorkDashboard/var/password'));
+        $mail->getMessages();
         $output->write("Command done");
 
         return Command::SUCCESS;
