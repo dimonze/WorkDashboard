@@ -66,6 +66,18 @@ class Contracts
     #[ORM\Column(nullable: true)]
     private ?float $advancedPayment = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isSentToLegal = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isSentToDavid = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isSentToCfa = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $legalId = null;
+
 
     public function __construct()
     {
@@ -309,6 +321,54 @@ class Contracts
     public function __toString(): string
     {
         return $this->name;
+    }
+
+    public function isIsSentToLegal(): ?bool
+    {
+        return $this->isSentToLegal;
+    }
+
+    public function setIsSentToLegal(bool $isSentToLegal): self
+    {
+        $this->isSentToLegal = $isSentToLegal;
+
+        return $this;
+    }
+
+    public function isIsSentToDavid(): ?bool
+    {
+        return $this->isSentToDavid;
+    }
+
+    public function setIsSentToDavid(bool $isSentToDavid): self
+    {
+        $this->isSentToDavid = $isSentToDavid;
+
+        return $this;
+    }
+
+    public function isIsSentToCfa(): ?bool
+    {
+        return $this->isSentToCfa;
+    }
+
+    public function setIsSentToCfa(bool $isSentToCfa): self
+    {
+        $this->isSentToCfa = $isSentToCfa;
+
+        return $this;
+    }
+
+    public function getLegalId(): ?int
+    {
+        return $this->legalId;
+    }
+
+    public function setLegalId(?int $legalId): self
+    {
+        $this->legalId = $legalId;
+
+        return $this;
     }
 
 }
