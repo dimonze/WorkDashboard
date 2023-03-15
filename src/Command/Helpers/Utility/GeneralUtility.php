@@ -4,8 +4,10 @@ namespace App\Command\Helpers\Utility;
 
 use App\Entity\Contracts;
 use DateTime;
+use Doctrine\Persistence\ObjectManager;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -88,7 +90,7 @@ class GeneralUtility
         $template->setValue('roleName', $contract->getAssignedRoles()[0]->getRole()->getName());
         $template->setValue('rate', $contract->getAssignedRoles()[0]->getRole()->getPrice());
         $template->setValue('utilization', $contract->getAssignedRoles()[0]->getUtilization() * 100);
-        $template->setValue('budgetCap', '$' . number_format(($contract->getBudgetCap() / 100), 0, '.', ','));
+        $template->setValue('budgetCap', '$' . number_format(($contract->getBudgetCap()), 0, '.', ','));
         // Другие поля
 
         // Генерируем имя файла для скачивания
@@ -102,6 +104,68 @@ class GeneralUtility
         $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $filename));
 
         return $response;
+    }
+
+    public static function calculateBudget(Contracts $contracts, ObjectManager $em): void
+    {
+        $results = 0;
+        $relatedRoles = $contracts->getAssignedRoles();
+        foreach ($relatedRoles as $role) {
+            $utilization = $role->getUtilization();
+
+            $price = $role->getRole()->getPrice();
+
+            $workingDays = self::getWorkingDays(
+                $role->getStartDate()->format('Y-m-d'),
+                $role->getEndDate()->format('Y-m-d'));
+            $budget = $workingDays * $utilization * 8 * $price;
+            $results += $budget;
+        }
+        $advPayment = self::setAdvancedPayment($results, $relatedRoles);
+        $contracts->setAdvancedPayment($advPayment);
+        $contracts->setFte(count($relatedRoles));
+        $contracts->setBudgetCap($results);
+//        self::updateLedger($contracts);
+        $em->persist($contracts);
+        $em->flush();
+    }
+
+    private static function setAdvancedPayment(float|int $results, \Doctrine\Common\Collections\Collection $relatedRoles)
+    {
+        $rate = 0;
+        $utilization = 0;
+        if (100000 > $results) {
+            return 0;
+        } else {
+            foreach ($relatedRoles as $role) {
+                $rate += $role->getRole()->getPrice();
+                $utilization += $role->getUtilization();
+            }
+            $utilization = $utilization / count($relatedRoles);
+            return $rate * 120 * $utilization;
+        }
+    }
+
+    private static function updateLedger(Contracts $contracts): void
+    {
+        // Загрузка существующего файла Excel
+        $spreadsheet = IOFactory::load(__DIR__ . '/../../var/CFA Institute - Documents Ledger2.xlsx');
+        $worksheet = $spreadsheet->getActiveSheet();
+
+        // Поиск первой пустой строки в столбце A
+        $lastRow = $worksheet->getHighestDataRow('A');
+        if ($worksheet->getCell('A' . $lastRow)->getValue() !== '') {
+            $lastRow++;
+        }
+
+        // Запись данных в первую пустую строку
+        $worksheet->setCellValue('A' . $lastRow, $contracts->getContractID());
+        $worksheet->setCellValue('B' . $lastRow, $contracts->getName());
+
+        // Сохранение файла Excel
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save(__DIR__ . '/../../var/CFA Institute - Documents Ledger2.xlsx');
+
     }
 
 }

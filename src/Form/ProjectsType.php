@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Command\Scrapers\DataArtPM\Entities\Contract;
 use App\Entity\Contracts;
 use App\Entity\Projects;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,7 @@ class ProjectsType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+
         $builder
 //            ->add('projectID')
 //            ->add('clientName')
@@ -54,9 +56,6 @@ class ProjectsType extends AbstractType
             ])
             ->add('relatedContract', EntityType::class,[
                 'class' => Contracts::class,
-                'attr' => [
-                    'hidden' => true,
-                ],
             ])
         ;
     }
@@ -65,19 +64,20 @@ class ProjectsType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Projects::class,
+            'related_contract' => null,
         ]);
     }
 
-    public function getProjects()
-    {
-        $projects = $this->em->getRepository(Projects::class)->findAll();
-
-        // создать массив опций выбора
-        $projectChoices = [];
-        foreach ($projects as $project) {
-            $projectChoices[$project->getName()] = $project->getId();
-        }
-
-        return $projectChoices;
-    }
+//    public function getProjects()
+//    {
+//        $projects = $this->em->getRepository(Projects::class)->findAll();
+//
+//        // создать массив опций выбора
+//        $projectChoices = [];
+//        foreach ($projects as $project) {
+//            $projectChoices[$project->getName()] = $project->getId();
+//        }
+//
+//        return $projectChoices;
+//    }
 }

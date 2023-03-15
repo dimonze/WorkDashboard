@@ -4,8 +4,10 @@ namespace App\Controller\Admin;
 
 use App\Command\Helpers\Utility\GeneralUtility;
 use App\Entity\Contracts;
+use App\EventListener\CalculateBudgetListener;
 use App\Form\AssignedRolesType;
 use App\Form\ProjectsType;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -32,6 +34,19 @@ class ContractsCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Contracts::class;
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::persistEntity($entityManager, $entityInstance);
+        GeneralUtility::calculateBudget($entityInstance, $entityManager);
+    }
+
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::updateEntity($entityManager, $entityInstance);
+        GeneralUtility::calculateBudget($entityInstance, $entityManager);
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -84,8 +99,12 @@ class ContractsCrudController extends AbstractCrudController
                 'Executed' => 'Executed',
                 'Finished' => 'Finished',
             ]);
-        yield MoneyField::new('budgetCap', 'Budget')->setCurrency('USD');
-        yield MoneyField::new('advancedPayment', 'Adv')->setCurrency('USD');
+        yield MoneyField::new('budgetCap', 'Budget')
+            ->setStoredAsCents(false)
+            ->setCurrency('USD');
+        yield MoneyField::new('advancedPayment', 'Adv')
+            ->setStoredAsCents(false)
+            ->setCurrency('USD');
         yield CollectionField::new('relatedProjects', 'Related Projects')
             ->setEntryType(ProjectsType::class)
             ->setFormTypeOptions([

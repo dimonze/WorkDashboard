@@ -43,13 +43,7 @@ class ScrapeData extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->write("Command started\n");
-//        $this->updateDbByDataArtPMData();
-//        $this->updateRolesInContracts();
-//        $this->calculateBudget();
-        $mail = new MailService('exchange.dataart.com', 993,
-            'universe\dhimenes',
-            file_get_contents('/Users/dimonze/projects/WorkDashboard/var/password'));
-        $mail->getMessages();
+        $this->updateDbByDataArtPMData();
         $output->write("Command done");
 
         return Command::SUCCESS;
@@ -131,43 +125,5 @@ class ScrapeData extends Command
             $em->persist($roles);
         }
         $em->flush();
-    }
-
-    private function updateRolesInContracts()
-    {
-        $em = $this->doctrine->getManager();
-        $contracts = $em->getRepository(Contracts::class)->findAll();
-        foreach ($contracts as $contract) {
-            foreach ($contract->getRelatedProjects() as $project) {
-                foreach ($project->getRelatedAssignments() as $assignment) {
-                    if ("1" === $assignment->getStatus()) {
-                        $assignedRole = new AssignedRoles();
-                        $assignedRole->setRelatedContract($contract);
-                        $assignedRole->setRole($em->getRepository(Roles::class)->findOneBy(['name' => $assignment->getRole()]));
-                        $assignedRole->setStartDate($assignment->getStartDate() != null ? $assignment->getStartDate() : $project->getStartDate());
-                        $assignedRole->setEndDate($assignment->getEndDate() != null ? $assignment->getEndDate() : $project->getEndDate());
-                        $assignedRole->setUtilization(1);
-                        $em->persist($assignedRole);
-
-                    }
-                }
-
-            }
-        }
-        $em->flush();
-    }
-
-    private function calculateBudget()
-    {
-        $em = $this->doctrine->getManager();
-        $contracts = $em->getRepository(Contracts::class)->findAll();
-        foreach ($contracts as $contract) {
-            $contract->setBudgetCap(1);
-            $em->persist($contract);
-            $em->flush();
-
-        }
-        unset($contract);
-        unset($em);
     }
 }

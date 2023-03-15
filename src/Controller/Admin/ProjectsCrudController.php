@@ -23,7 +23,7 @@ class ProjectsCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id', 'ID');
+//        yield IdField::new('id', 'ID');
         yield IdField::new('projectID', 'project ID')->hideOnForm();
         yield TextField::new('clientName', 'Client Name');
         yield TextField::new('owner', 'Owner');

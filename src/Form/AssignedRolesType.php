@@ -24,16 +24,10 @@ class AssignedRolesType extends AbstractType
             ->add('startDate', DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'Start Date',
-                'html5' => true,
-                'format' => 'yyyy-MM-dd',
-                'attr' => ['class' => 'js-datepicker'],
             ])
             ->add('endDate', DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'End Date',
-                'html5' => true,
-                'format' => 'yyyy-MM-dd',
-                'attr' => ['class' => 'js-datepicker'],
             ])
             ->add('utilization', NumberType::class)
         ;

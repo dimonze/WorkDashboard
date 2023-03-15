@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\EventListener\CalculateBudgetListener;
 use App\Repository\ContractsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,7 +9,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ContractsRepository::class)]
-#[ORM\EntityListeners([CalculateBudgetListener::class])]
 class Contracts
 {
     #[ORM\Id]
